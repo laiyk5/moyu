@@ -3,9 +3,19 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
-import time
-from random import random
+from common.utils import sleep_randomly
+
+def wait_and_find_element_by_xpath(driver:WebDriver, xpath:str, timeout:float=15, timeout_message='Time out')->WebElement:
+  try:
+    WebDriverWait(driver, timeout).until(
+        EC.presence_of_element_located((By.XPATH, xpath))
+    )
+  except:
+    raise RuntimeError("timeout_message")
+  return driver.find_element(by=By.XPATH, value=xpath)
 
 def search_routine_agoda(query:str)->str:
   '''
@@ -17,52 +27,65 @@ def search_routine_agoda(query:str)->str:
   driver.get("https://www.agoda.com/")
 
   # 定位搜索框并输入搜索关键词
-  search_box = driver.find_element(by=By.XPATH, value=r'//*[@id="textInput"]')
-  search_box.send_keys(query)
-  search_box.send_keys(Keys.RETURN)
-
-  # 等待搜索结果加载
   try:
-    WebDriverWait(driver, 100).until(
-        EC.presence_of_element_located((By.XPATH, r'//*[@id="SearchBoxContainer"]/div[1]/div/div[2]/div/div/div[5]/div/div/ul/li[1]'))
-    )
+    search_box = wait_and_find_element_by_xpath(driver, r'//*[@id="textInput"]')
+    search_box.send_keys(query)
+    search_box.send_keys(Keys.RETURN)
   except:
-    print("搜索结果加载超时")
     driver.quit()
-
-    raise RuntimeError("搜索结果加载超时")
-      
-  time.sleep(2)
-
+    raise RuntimeError("Execution Failed.")
+    
+  sleep_randomly(1, 1)
+    
   # 点击搜索栏推荐的第一个信息
-  first_recommendation = driver.find_element(By.XPATH, r'//*[@id="SearchBoxContainer"]/div[1]/div/div[2]/div/div/div[5]/div/div/ul/li[1]')
-  first_recommendation.click()
+  try:
+    first_recommendation = wait_and_find_element_by_xpath(driver, r'//*[@id="SearchBoxContainer"]/div[1]/div/div[2]/div/div/div[5]/div/div/ul/li[1]')
+    first_recommendation.click()
+  except:
+    driver.quit()
+    raise RuntimeError("Execution Failed.")
+  
+  sleep_randomly(1, 1)
 
   # 随便选一个元素点一下跳出UI才能点击搜索按钮
-  elem = driver.find_element(By.XPATH, r'//*[@id="check-in-box"]')
-  elem.click()
+  try:
+    elem = wait_and_find_element_by_xpath(driver, r'//*[@id="check-in-box"]')
+    elem.click()
+  except:
+    driver.quit()
+    raise RuntimeError("Execution Failed.")
+  
+  sleep_randomly(1, 1)
 
   # 点击搜索按钮
-  button = driver.find_element(By.XPATH, r'//*[@id="Tabs-Container"]/button')
-  button.click()
-
-  driver.switch_to.window(driver.window_handles[-1])
   try:
-    WebDriverWait(driver, 100).until(
-        EC.presence_of_element_located((By.XPATH, r'//*[@id="contentContainer"]'))
-    )
+    button = wait_and_find_element_by_xpath(driver, r'//*[@id="Tabs-Container"]/button')
+    button.click()
   except:
-    print("搜索结果加载超时")
     driver.quit()
-    raise RuntimeError("搜索结果加载超时")
+    raise RuntimeError("Execution Failed.")
+  
+  # 应对可能的页面跳转
+  driver.switch_to.window(driver.window_handles[-1])
+  
+  try:
+    first_hotel = wait_and_find_element_by_xpath(driver, r'//*[@id="contentContainer"]//*/h3')
+    first_hotel.click()
+  except:
+    driver.quit()
+    raise RuntimeError("Execution Failed.")
 
   # 点击第一个酒店信息
-  first_hotel = driver.find_element(By.XPATH, r'//*[@id="contentContainer"]//*/h3')
-  first_hotel.click()
+  
+  sleep_randomly(1, 1)
 
   driver.switch_to.window(driver.window_handles[-1])
-
-  time.sleep(5)
+  
+  try:
+    _ = wait_and_find_element_by_xpath(driver, r'//*[@id="abouthotel-panel"]')
+  except:
+    driver.quit()
+    raise RuntimeError("酒店详情加载超时")
 
   page_source = driver.page_source
 

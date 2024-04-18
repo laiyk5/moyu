@@ -50,10 +50,10 @@ def read_excel_and_search(file_path:str, column_name:str):
     
     df = pd.DataFrame(output_list)
     df.to_csv('out/output.csv', index=False)
-        
+
     
 #指定Excel文件路径和要读取的列名
-excel_file = "D:/dev/scartch_data/data/酒店未匹配2.xlsx"
+excel_file = r"./data/酒店未匹配2.xlsx"
 column_name = "hotel_en_name"
 
 read_excel_and_search(excel_file,column_name)
