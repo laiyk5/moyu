@@ -3,7 +3,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import sys
 
 import time
 
@@ -30,7 +29,7 @@ def search_routine_agoda(query:str)->str:
       print("搜索结果加载超时")
       driver.quit()
 
-      sys.exit()
+      raise RuntimeError("搜索结果加载超时")
       
   time.sleep(2)
 
@@ -54,11 +53,10 @@ def search_routine_agoda(query:str)->str:
   except:
       print("搜索结果加载超时")
       driver.quit()
-
-      sys.exit()
+      raise RuntimeError("搜索结果加载超时")
 
   # 点击第一个酒店信息
-  first_hotel = driver.find_element(By.XPATH, r'//*[@id="contentContainer"]')
+  first_hotel = driver.find_element(By.XPATH, r'//*[@id="contentContainer"]//*/h3')
   first_hotel.click()
 
   driver.switch_to.window(driver.window_handles[-1])

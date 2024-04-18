@@ -5,22 +5,29 @@ from bs4 import BeautifulSoup
 from lxml import etree
 
 def get_info(page_src:str) -> dict[str, str]:
-  output = {}
+  output = {"hotel_name":"Null", "number_of_reviews": "Null", "location": "Null"}
   soup = BeautifulSoup(page_src, 'lxml')
-  hotel_name = soup.find(attrs={"data-selenium": "hotel-header-name"})
-  
-  if hotel_name is not None:
-    output["hotel_name"] = hotel_name.text
+  try:
+    hotel_name = soup.find(attrs={"data-selenium": "hotel-header-name"})
+    if hotel_name is not None:
+      output["hotel_name"] = hotel_name.text
+  except:
+    pass
 
-  review_element = soup.select('[data-review-count-property-on-ssr]')
-  if review_element is not None:
-    output["number_of_reviews"] = review_element[0].attrs["data-review-count-property-on-ssr"]
+  try:
+    review_element = soup.select('[data-review-count-property-on-ssr]')
+    if review_element is not None:
+      output["number_of_reviews"] = review_element[0].attrs["data-review-count-property-on-ssr"]
+  except:
+    pass
 
-  xpath_query_location = r'//*[@id="abouthotel-panel"]/div[3]/div/div[1]/div[1]/div/div/div[2]/span'
-  dom_tree = etree.HTML(str(soup), parser=None)
-
-  location_str = dom_tree.xpath(xpath_query_location)[0].text
-  output["location"] = location_str
+  try:  
+    xpath_query_location = r'//*[@id="abouthotel-panel"]/div[3]/div/div[1]/div[1]/div/div/div[2]/span'
+    dom_tree = etree.HTML(str(soup), parser=None)
+    location_str = dom_tree.xpath(xpath_query_location)[0].text
+    output["location"] = location_str
+  except:
+    pass
 
   return output
 
