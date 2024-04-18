@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 import time
+from random import random
 
 def search_routine_agoda(query:str)->str:
   '''
@@ -22,14 +23,14 @@ def search_routine_agoda(query:str)->str:
 
   # 等待搜索结果加载
   try:
-      WebDriverWait(driver, 100).until(
-          EC.presence_of_element_located((By.XPATH, r'//*[@id="SearchBoxContainer"]/div[1]/div/div[2]/div/div/div[5]/div/div/ul/li[1]'))
-      )
+    WebDriverWait(driver, 100).until(
+        EC.presence_of_element_located((By.XPATH, r'//*[@id="SearchBoxContainer"]/div[1]/div/div[2]/div/div/div[5]/div/div/ul/li[1]'))
+    )
   except:
-      print("搜索结果加载超时")
-      driver.quit()
+    print("搜索结果加载超时")
+    driver.quit()
 
-      raise RuntimeError("搜索结果加载超时")
+    raise RuntimeError("搜索结果加载超时")
       
   time.sleep(2)
 
@@ -47,13 +48,13 @@ def search_routine_agoda(query:str)->str:
 
   driver.switch_to.window(driver.window_handles[-1])
   try:
-      WebDriverWait(driver, 100).until(
-          EC.presence_of_element_located((By.XPATH, r'//*[@id="contentContainer"]'))
-      )
+    WebDriverWait(driver, 100).until(
+        EC.presence_of_element_located((By.XPATH, r'//*[@id="contentContainer"]'))
+    )
   except:
-      print("搜索结果加载超时")
-      driver.quit()
-      raise RuntimeError("搜索结果加载超时")
+    print("搜索结果加载超时")
+    driver.quit()
+    raise RuntimeError("搜索结果加载超时")
 
   # 点击第一个酒店信息
   first_hotel = driver.find_element(By.XPATH, r'//*[@id="contentContainer"]//*/h3')

@@ -22,34 +22,34 @@ from tqdm import tqdm
 
 # 读取Excel文件并逐行搜索
 def read_excel_and_search(file_path:str, column_name:str):
-    # 读取Excel文件
-    df=pd.read_excel(file_path)
-    
-    # 检查列名是否存在
-    if column_name not in df.columns:
-        print(f"列名 '{column_name}' 不存在.")
-        return
-    
-    # 打印指定列的数据
-    column_data = df[column_name]
+  # 读取Excel文件
+  df=pd.read_excel(file_path)
 
-    #逐行搜索
-    output_list = []
-    for query in tqdm(column_data):
-        print("正在搜索：",query)
-        try:
-            page_src = search_routine_agoda(query)
-            ret = get_info(page_src)
-            output = {"query": query, "hotel_name": ret["hotel_name"], "number_of_reviews": ret["number_of_reviews"], "location": ret["location"]}
-            print(ret.items() )
-        except:
-            output = {"query": query, "hotel_name": "Null", "number_of_reviews": "Null", "location": "Null"}
-        
-        output_list.append(output)
-        print(output)
-        
-        df = pd.DataFrame(output_list)
-        df.to_csv('out/output.csv', index=False)
+  # 检查列名是否存在
+  if column_name not in df.columns:
+    print(f"列名 '{column_name}' 不存在.")
+    return
+
+  # 打印指定列的数据
+  column_data = df[column_name]
+
+  #逐行搜索
+  output_list = []
+  for query in tqdm(column_data):
+    print("正在搜索：",query)
+    try:
+      page_src = search_routine_agoda(query)
+      ret = get_info(page_src)
+      output = {"query": query, "hotel_name": ret["hotel_name"], "number_of_reviews": ret["number_of_reviews"], "location": ret["location"]}
+      print(ret.items() )
+    except:
+      output = {"query": query, "hotel_name": "Null", "number_of_reviews": "Null", "location": "Null"}
+    
+    output_list.append(output)
+    print(output)
+    
+    df = pd.DataFrame(output_list)
+    df.to_csv('out/output.csv', index=False)
         
     
 #指定Excel文件路径和要读取的列名
