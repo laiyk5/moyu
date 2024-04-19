@@ -87,3 +87,65 @@ def search_routine_agoda(driver:WebDriver, query:str)->str:
   page_source = driver.page_source
 
   return page_source
+
+def search_routine_agoda_2(driver:WebDriver, query:str)->str:
+  '''
+  :param query: The string you want to put in the search bar.
+  :return: The page source of the resulting page.
+  '''
+  
+  # 清理浏览器页面
+  close_others(driver)
+
+  # 定位搜索框并输入搜索关键词
+  try:
+    search_box = wait_and_find_element_by_xpath(driver, r'//*[@id="textInput"]')
+    search_box.clear()
+    search_box.send_keys(query)
+    search_box.send_keys(Keys.RETURN)
+  except:
+    raise RuntimeError("Execution Failed.")
+    
+    
+  # 点击搜索栏推荐的第一个信息
+  try:
+    first_recommendation = wait_and_find_element_by_xpath(driver, r'//*[@id="SearchBoxContainer"]/div/div/div[5]/div/div/ul/li[1]')
+    sleep_randomly(1, 1)
+    first_recommendation.click()
+  except:
+    raise RuntimeError("Execution Failed.")
+  
+  sleep_randomly(1, 1)
+  
+  # 点击搜索按钮
+  try:
+    button = wait_and_find_element_by_xpath(driver, r'//*[@id="SearchBoxContainer"]/div/div/button')
+    sleep_randomly(1, 1)
+    button.click()
+    # 应对可能的页面跳转
+    driver.switch_to.window(driver.window_handles[-1])
+  except:
+    raise RuntimeError("Execution Failed.")
+  
+  
+  # 点击第一个酒店信息
+  try:
+    first_hotel = wait_and_find_element_by_xpath(driver, r'//*[@id="contentContainer"]//*/h3')
+    sleep_randomly(1, 1)
+    first_hotel.click()
+    # 应对可能的页面跳转
+    driver.switch_to.window(driver.window_handles[-1])
+  except:
+    raise RuntimeError("Execution Failed.")
+  
+  sleep_randomly(1, 1)
+
+  
+  try:
+    _ = wait_and_find_element_by_xpath(driver, r'//*[@id="abouthotel-panel"]')
+  except:
+    raise RuntimeError("酒店详情加载超时")
+
+  page_source = driver.page_source
+
+  return page_source
