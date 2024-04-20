@@ -1,6 +1,15 @@
 from time import sleep
 
 class ErrHandler:
+  '''
+  Handle the err situation by manipulating index.
+  
+  - When in failure situation, call the `fail' routine;
+  - when in sucess situation, call the `succeed' routine.
+  
+  If fail, retry and sleep with exponentially increasing time.
+  If success, advance the index.
+  '''
   PATIENCE = 5
   SLEEP_BASE_IN_SECONDS = 10
   block_flag = False

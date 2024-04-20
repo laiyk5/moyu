@@ -1,4 +1,3 @@
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -102,7 +101,6 @@ def search_routine_agoda_2(driver:WebDriver, query:str)->str:
     search_box = wait_and_find_element_by_xpath(driver, r'//*[@id="textInput"]')
     search_box.clear()
     search_box.send_keys(query)
-    search_box.send_keys(Keys.RETURN)
   except:
     raise RuntimeError("Execution Failed.")
     
