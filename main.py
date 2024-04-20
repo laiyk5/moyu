@@ -4,15 +4,20 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 import random
+from tqdm import tqdm
 
 from common.parse import get_info
 from search_routine import search_routine_agoda, search_routine_agoda_2
 
 from common.utils import sleep_randomly
 from common.err_handler import ErrHandler
+from common.project_handler import ProjectHandler
 
-from tqdm import tqdm
+project = ProjectHandler()
 
+task_id = project.new_task()
+
+OUT_PATH = project.get_task_path(task_id)
 
 excel_file = r"./data/酒店未匹配2.xlsx"
 column_name = "hotel_en_name"
@@ -32,7 +37,6 @@ def initialize_driver():
   while not is_success:
     try:
       driver = webdriver.Chrome()
-      driver.get('https://www.agoda.com/')
       page_src = search_routine_agoda(driver, 'good')
       _ = get_info(page_src)
       is_success = True
@@ -84,7 +88,7 @@ while index < len(column_data):
   print(output)
   
   df = pd.DataFrame(output_list)
-  df.to_csv('out/output.csv', index=False)
+  df.to_csv(f'{OUT_PATH}/output.csv', index=False)
   
   sleep_randomly(2, 2) # 防止操作太快浏览器反应不过来
     
